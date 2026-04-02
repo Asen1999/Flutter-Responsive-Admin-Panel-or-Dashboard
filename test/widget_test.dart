@@ -1,30 +1,51 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:admin/constants.dart';
+import 'package:admin/controllers/menu_app_controller.dart';
+import 'package:admin/features/history/presentation/providers/generation_history_provider.dart';
+import 'package:admin/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:admin/main.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+  testWidgets('main menu can switch to image create and history pages',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1400, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: bgColor,
+          canvasColor: secondaryColor,
+        ),
+        home: MultiProvider(
+          providers: [
+            ChangeNotifierProvider<MenuAppController>(
+              create: (BuildContext context) => MenuAppController(),
+            ),
+            ChangeNotifierProvider<GenerationHistoryProvider>(
+              create: (BuildContext context) => GenerationHistoryProvider(),
+            ),
+          ],
+          child: MainScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    expect(find.text('Dashboard'), findsWidgets);
+    expect(find.text('Image Create'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.tap(find.text('Image Create'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tile Style'), findsOneWidget);
+
+    await tester.tap(find.text('History Image List'));
+    await tester.pumpAndSettle();
+    expect(find.text('Generated History'), findsOneWidget);
   });
 }

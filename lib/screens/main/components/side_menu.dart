@@ -1,5 +1,9 @@
+import 'package:admin/constants.dart';
+import 'package:admin/controllers/menu_app_controller.dart';
+import 'package:admin/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({
@@ -8,51 +12,27 @@ class SideMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MenuAppController menuController = context.watch<MenuAppController>();
+
     return Drawer(
       child: ListView(
         children: [
           DrawerHeader(
             child: Image.asset("assets/images/logo.png"),
           ),
-          DrawerListTile(
-            title: "Dashboard",
-            svgSrc: "assets/icons/menu_dashboard.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Transaction",
-            svgSrc: "assets/icons/menu_tran.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Task",
-            svgSrc: "assets/icons/menu_task.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Documents",
-            svgSrc: "assets/icons/menu_doc.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Store",
-            svgSrc: "assets/icons/menu_store.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Notification",
-            svgSrc: "assets/icons/menu_notification.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Profile",
-            svgSrc: "assets/icons/menu_profile.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Settings",
-            svgSrc: "assets/icons/menu_setting.svg",
-            press: () {},
+          ...menuController.menuItems.map(
+            (MenuNavItem item) => DrawerListTile(
+              title: item.title,
+              svgSrc: item.svgSrc,
+              selected: menuController.currentPage == item.page,
+              press: () {
+                context.read<MenuAppController>().setPage(item.page);
+                if (!Responsive.isDesktop(context) &&
+                    Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -66,25 +46,39 @@ class DrawerListTile extends StatelessWidget {
     // For selecting those three line once press "Command+D"
     required this.title,
     required this.svgSrc,
+    required this.selected,
     required this.press,
   }) : super(key: key);
 
   final String title, svgSrc;
+  final bool selected;
   final VoidCallback press;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       onTap: press,
+      selected: selected,
+      tileColor:
+          selected ? primaryColor.withValues(alpha: 0.15) : Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
       horizontalTitleGap: 0.0,
       leading: SvgPicture.asset(
         svgSrc,
-        colorFilter: ColorFilter.mode(Colors.white54, BlendMode.srcIn),
+        colorFilter: ColorFilter.mode(
+          selected ? primaryColor : Colors.white54,
+          BlendMode.srcIn,
+        ),
         height: 16,
       ),
       title: Text(
         title,
-        style: TextStyle(color: Colors.white54),
+        style: TextStyle(
+          color: selected ? Colors.white : Colors.white54,
+          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+        ),
       ),
     );
   }

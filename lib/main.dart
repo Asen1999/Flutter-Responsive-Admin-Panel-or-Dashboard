@@ -1,5 +1,6 @@
 import 'package:admin/constants.dart';
 import 'package:admin/controllers/menu_app_controller.dart';
+import 'package:admin/features/history/presentation/providers/generation_history_provider.dart';
 import 'package:admin/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(
             create: (context) => MenuAppController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => GenerationHistoryProvider(),
           ),
         ],
         child: MainScreen(),

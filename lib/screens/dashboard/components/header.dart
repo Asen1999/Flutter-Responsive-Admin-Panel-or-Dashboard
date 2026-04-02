@@ -9,7 +9,10 @@ import '../../../constants.dart';
 class Header extends StatelessWidget {
   const Header({
     Key? key,
+    this.title = "Dashboard",
   }) : super(key: key);
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,7 @@ class Header extends StatelessWidget {
           ),
         if (!Responsive.isMobile(context))
           Text(
-            "Dashboard",
+            title,
             style: Theme.of(context).textTheme.titleLarge,
           ),
         if (!Responsive.isMobile(context))

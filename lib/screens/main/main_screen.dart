@@ -1,4 +1,6 @@
 import 'package:admin/controllers/menu_app_controller.dart';
+import 'package:admin/features/generation/presentation/pages/image_create_page.dart';
+import 'package:admin/features/history/presentation/pages/history_image_list_page.dart';
 import 'package:admin/responsive.dart';
 import 'package:admin/screens/dashboard/dashboard_screen.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +28,30 @@ class MainScreen extends StatelessWidget {
             Expanded(
               // It takes 5/6 part of the screen
               flex: 5,
-              child: DashboardScreen(),
+              child: _MainContent(),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _MainContent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final AppMenuPage currentPage =
+        context.select<MenuAppController, AppMenuPage>(
+      (MenuAppController controller) => controller.currentPage,
+    );
+
+    return IndexedStack(
+      index: AppMenuPage.values.indexOf(currentPage),
+      children: [
+        DashboardScreen(),
+        ImageCreatePage(),
+        HistoryImageListPage(),
+      ],
     );
   }
 }
